@@ -80,10 +80,7 @@ const skill = program
 skill
   .command("install")
   .description("Instala la skill en el agente indicado")
-  .requiredOption(
-    "--agent <agente>",
-    "claude-code | cursor | codex | opencode"
-  )
+  .requiredOption("--agent <agente>", "claude-code | cursor | codex | opencode")
   .option("--global", "instalar en el home del agente (no en el proyecto)")
   .action((opts) => skillInstallCommand({ ...program.opts(), ...opts }))
 

@@ -3,12 +3,7 @@
 // flag ni lo cubre un --yes.
 import * as p from "@clack/prompts"
 import { readAuth } from "../lib/config"
-import {
-  checkPolicy,
-  dailySpent,
-  readConfig,
-  writeConfig,
-} from "../lib/policy"
+import { checkPolicy, dailySpent, readConfig, writeConfig } from "../lib/policy"
 import { requestTransferPin, transfer } from "../lib/send"
 import { fail, type GlobalOpts, notAuthenticated } from "./util"
 

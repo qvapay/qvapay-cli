@@ -61,9 +61,7 @@ export async function txWatchCommand(opts: WatchOpts): Promise<void> {
   const seen = new Set<string>()
   let priming = true // la primera pasada solo siembra el estado, no imprime
 
-  console.error(
-    `Vigilando transacciones cada ${interval}s. Ctrl-C para salir.`
-  )
+  console.error(`Vigilando transacciones cada ${interval}s. Ctrl-C para salir.`)
   for (;;) {
     try {
       const txs = await listTransactions(token, {
