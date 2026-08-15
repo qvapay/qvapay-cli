@@ -4,7 +4,12 @@ import * as p from "@clack/prompts"
 import { readConfig, type SendPolicy, writeConfig } from "../lib/policy"
 import type { GlobalOpts } from "./util"
 
-const KEYS = ["send.enabled", "send.maxPerTx", "send.dailyCap", "send.whitelist"]
+const KEYS = [
+  "send.enabled",
+  "send.maxPerTx",
+  "send.dailyCap",
+  "send.whitelist",
+]
 
 export async function configGetCommand(
   key: string,

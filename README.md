@@ -35,6 +35,7 @@ qvapay login                 # email + PIN por correo
 qvapay whoami
 qvapay balance
 qvapay tx list --limit 10 --status paid
+qvapay tx watch --interval 30   # sondea y muestra las nuevas hasta Ctrl-C
 qvapay tx get <uuid>
 qvapay send <usuario> <monto> --note "café"
 qvapay logout

@@ -53,8 +53,7 @@ function parse(tpl: string): {
   if (!m) return { name: "qvapay", description: "", body: tpl }
   const front = m[1]
   const name = front.match(/^name:\s*(.+)$/m)?.[1]?.trim() ?? "qvapay"
-  const description =
-    front.match(/^description:\s*(.+)$/m)?.[1]?.trim() ?? ""
+  const description = front.match(/^description:\s*(.+)$/m)?.[1]?.trim() ?? ""
   return { name, description, body: m[2] }
 }
 
@@ -76,7 +75,9 @@ function mergeAgents(existing: string, section: string): string {
   const s = existing.indexOf(START)
   const e = existing.indexOf(END)
   if (s !== -1 && e !== -1) {
-    return existing.slice(0, s) + section.trim() + existing.slice(e + END.length)
+    return (
+      existing.slice(0, s) + section.trim() + existing.slice(e + END.length)
+    )
   }
   return `${existing.trimEnd()}\n\n${section}`
 }

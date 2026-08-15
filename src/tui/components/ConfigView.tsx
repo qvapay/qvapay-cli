@@ -8,11 +8,7 @@ const SUBTABS = ["Pagos", "Agentes"]
 
 // Config en dos sub-tabs (←/→): política de send (Pagos) e instalar skill
 // (Agentes). `onEditing` pausa el input global de App mientras se teclea un campo.
-export function ConfigView({
-  onEditing,
-}: {
-  onEditing: (v: boolean) => void
-}) {
+export function ConfigView({ onEditing }: { onEditing: (v: boolean) => void }) {
   const [sub, setSub] = useState(0)
   const [editing, setEditing] = useState(false)
 
@@ -114,8 +110,10 @@ function PaymentsConfig({ setEdit }: { setEdit: (v: boolean) => void }) {
       else if (input && !key.ctrl && !key.meta) setDraft((d) => d + input)
       return
     }
-    if (key.upArrow || input === "k") setSel((s) => (s - 1 + ROWS.length) % ROWS.length)
-    else if (key.downArrow || input === "j") setSel((s) => (s + 1) % ROWS.length)
+    if (key.upArrow || input === "k")
+      setSel((s) => (s - 1 + ROWS.length) % ROWS.length)
+    else if (key.downArrow || input === "j")
+      setSel((s) => (s + 1) % ROWS.length)
     else if (key.return || input === " ") {
       if (ROWS[sel].key === "enabled")
         save({ ...cfg, send: { ...cfg.send, enabled: !cfg.send.enabled } })

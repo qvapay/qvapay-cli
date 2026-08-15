@@ -3,12 +3,7 @@
 // flag ni lo cubre un --yes.
 import * as p from "@clack/prompts"
 import { readAuth } from "../lib/config"
-import {
-  checkPolicy,
-  dailySpent,
-  readConfig,
-  writeConfig,
-} from "../lib/policy"
+import { checkPolicy, dailySpent, readConfig, writeConfig } from "../lib/policy"
 import { requestTransferPin, transfer } from "../lib/send"
 import { fail, type GlobalOpts, notAuthenticated } from "./util"
 
@@ -87,8 +82,8 @@ export async function sendCommand(
       description: opts.note,
     })
     s.stop("Transferencia enviada.")
-    // Respuesta cruda para depurar el contrato del endpoint.
-    console.error(`[transfer] respuesta: ${JSON.stringify(res)}`)
+    if (opts.verbose)
+      console.error(`[transfer] respuesta: ${JSON.stringify(res)}`)
 
     const t = today()
     await writeConfig({

@@ -1,6 +1,11 @@
 import { expect, test } from "bun:test"
 import type { Transaction } from "../src/lib/types"
-import { clampTake, unwrapTransactions } from "../src/lib/wallet"
+import {
+  clampInterval,
+  clampTake,
+  newTransactions,
+  unwrapTransactions,
+} from "../src/lib/wallet"
 
 const tx = (uuid: string): Transaction => ({ uuid, amount: 1 })
 
@@ -23,4 +28,22 @@ test("clampTake limita a 1-30", () => {
   expect(clampTake(0)).toBe(1)
   expect(clampTake(undefined)).toBeUndefined()
   expect(clampTake(Number.NaN)).toBeUndefined()
+})
+
+test("newTransactions filtra las vistas y las devuelve cronológicas", () => {
+  const seen = new Set(["b"])
+  // La API entrega las recientes primero: c, b, a -> salen a, c.
+  const nuevas = newTransactions([tx("c"), tx("b"), tx("a")], seen)
+  expect(nuevas.map((t) => t.uuid)).toEqual(["a", "c"])
+})
+
+test("newTransactions sin nada nuevo devuelve []", () => {
+  expect(newTransactions([tx("a")], new Set(["a"]))).toEqual([])
+})
+
+test("clampInterval no baja del piso de rate limit", () => {
+  expect(clampInterval(1)).toBe(10)
+  expect(clampInterval(30)).toBe(30)
+  expect(clampInterval(undefined)).toBe(15)
+  expect(clampInterval(Number.NaN)).toBe(15)
 })

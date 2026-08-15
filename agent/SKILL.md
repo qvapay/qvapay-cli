@@ -16,7 +16,13 @@ qvapay whoami --json          # usuario autenticado
 qvapay balance --json         # saldo disponible
 qvapay tx list --json         # transacciones (--limit 1-30, --page, --status paid|pending|cancelled)
 qvapay tx get <uuid>          # detalle de una transacción (siempre JSON)
+qvapay tx watch --json        # espera transacciones nuevas: NDJSON, una línea por tx
 ```
+
+`tx watch` no termina solo: sondea cada 15 s (mínimo 10, `--interval <s>`) hasta
+Ctrl-C. La primera pasada no imprime nada — solo registra lo que ya existía —, así
+que toda línea que salga es una transacción nueva. Úsalo para esperar un cobro en
+vez de repetir `tx list`.
 
 Ejemplos de salida:
 
