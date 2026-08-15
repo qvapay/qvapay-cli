@@ -11,7 +11,7 @@ import { loginCommand } from "./commands/login"
 import { logoutCommand } from "./commands/logout"
 import { sendCommand } from "./commands/send"
 import { skillInstallCommand } from "./commands/skill"
-import { txGetCommand, txListCommand } from "./commands/tx"
+import { txGetCommand, txListCommand, txWatchCommand } from "./commands/tx"
 import { whoamiCommand } from "./commands/whoami"
 
 const program = new Command()
@@ -44,6 +44,11 @@ tx.command("list")
   .option("--page <n>", "página")
   .option("--status <estado>", "paid | pending | cancelled (def. paid)")
   .action((opts) => txListCommand({ ...program.opts(), ...opts }))
+tx.command("watch")
+  .description("Vigila transacciones nuevas hasta Ctrl-C")
+  .option("--interval <s>", "segundos entre sondeos (mín. 10, def. 15)")
+  .option("--status <estado>", "paid | pending | cancelled (def. paid)")
+  .action((opts) => txWatchCommand({ ...program.opts(), ...opts }))
 tx.command("get <uuid>")
   .description("Detalle de una transacción")
   .action((uuid) => txGetCommand(uuid, program.opts()))

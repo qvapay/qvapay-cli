@@ -48,6 +48,20 @@ export function unwrapTransactions(resp: TxResponse): Transaction[] {
   return Array.isArray(resp) ? resp : (resp.transactions ?? [])
 }
 
+// Las no vistas, en orden cronológico: la API devuelve las recientes primero.
+export function newTransactions(
+  txs: Transaction[],
+  seen: Set<string>
+): Transaction[] {
+  return txs.filter((t) => !seen.has(t.uuid)).reverse()
+}
+
+// Sondeo de `tx watch`. El servidor corta a 3 req / 5 s, así que 10 s es el piso.
+export function clampInterval(seconds?: number): number {
+  if (seconds == null || Number.isNaN(seconds)) return 15
+  return Math.max(10, Math.floor(seconds))
+}
+
 // El servidor exige take entre 1 y 30.
 export function clampTake(limit?: number): number | undefined {
   if (limit == null || Number.isNaN(limit)) return undefined

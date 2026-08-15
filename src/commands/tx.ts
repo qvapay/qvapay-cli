@@ -1,5 +1,12 @@
+import { QvaPayError } from "../lib/client"
 import type { Transaction } from "../lib/types"
-import { clampTake, getTransaction, listTransactions } from "../lib/wallet"
+import {
+  clampInterval,
+  clampTake,
+  getTransaction,
+  listTransactions,
+  newTransactions,
+} from "../lib/wallet"
 import { fail, type GlobalOpts, requireToken } from "./util"
 
 interface ListOpts extends GlobalOpts {
@@ -30,6 +37,52 @@ export async function txListCommand(opts: ListOpts): Promise<void> {
     }
   } catch (e) {
     fail(e, opts)
+  }
+}
+
+interface WatchOpts extends GlobalOpts {
+  interval?: string
+  status?: string
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// Sondea hasta Ctrl-C e imprime solo lo que no había visto. Con --json, una
+// línea JSON por transacción (NDJSON), apto para `| jq` o para un agente.
+export async function txWatchCommand(opts: WatchOpts): Promise<void> {
+  const token = await requireToken(opts)
+  if (!token) return
+
+  const interval = clampInterval(
+    opts.interval ? Number(opts.interval) : undefined
+  )
+  // ponytail: el set vive en memoria y solo crece con lo nuevo; si un watch de
+  // semanas llega a molestar, acotarlo a los últimos N uuids.
+  const seen = new Set<string>()
+  let priming = true // la primera pasada solo siembra el estado, no imprime
+
+  console.error(
+    `Vigilando transacciones cada ${interval}s. Ctrl-C para salir.`
+  )
+  for (;;) {
+    try {
+      const txs = await listTransactions(token, {
+        take: 30,
+        status: opts.status,
+      })
+      for (const t of newTransactions(txs, seen)) {
+        seen.add(t.uuid)
+        if (priming) continue
+        console.log(opts.json ? JSON.stringify(t) : formatRow(t))
+      }
+      priming = false
+    } catch (e) {
+      // Red caída o 429 no deben matar la vigilancia; 401 sí, el token no se
+      // recupera solo.
+      if (e instanceof QvaPayError && e.status === 401) return fail(e, opts)
+      console.error(`⚠ ${e instanceof Error ? e.message : e}`)
+    }
+    await sleep(interval * 1000)
   }
 }
 
