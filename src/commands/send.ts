@@ -87,8 +87,8 @@ export async function sendCommand(
       description: opts.note,
     })
     s.stop("Transferencia enviada.")
-    // Respuesta cruda para depurar el contrato del endpoint.
-    console.error(`[transfer] respuesta: ${JSON.stringify(res)}`)
+    if (opts.verbose)
+      console.error(`[transfer] respuesta: ${JSON.stringify(res)}`)
 
     const t = today()
     await writeConfig({

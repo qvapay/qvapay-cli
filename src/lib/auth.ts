@@ -34,15 +34,6 @@ export function login(
   })
 }
 
-export async function checkAuth(token: string): Promise<boolean> {
-  try {
-    await api("/auth/check", { token })
-    return true
-  } catch {
-    return false
-  }
-}
-
 // Perfil autenticado. Incluye balance (número) y latest_transactions.
 export function getUser(token: string): Promise<User> {
   return api<User>("/user", { token })

@@ -1,6 +1,6 @@
 // Helpers compartidos por los comandos: sesión y errores con exit codes.
 import { QvaPayError } from "../lib/client"
-import { readAuth } from "../lib/config"
+import { clearAuth, readAuth } from "../lib/config"
 
 export interface GlobalOpts {
   json?: boolean
@@ -24,6 +24,9 @@ export function notAuthenticated(json?: boolean): void {
 // Imprime un error y fija el exit code (401 -> 2 no autenticado, resto -> 1).
 export function fail(e: unknown, opts: GlobalOpts = {}): void {
   if (e instanceof QvaPayError && e.status === 401) {
+    // Token muerto: no dejar la sesión zombie en disco. ponytail: fire-and-forget,
+    // el unlink pendiente mantiene vivo el loop y ya traga sus propios errores.
+    clearAuth()
     notAuthenticated(opts.json)
     return
   }
