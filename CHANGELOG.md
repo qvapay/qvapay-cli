@@ -46,8 +46,8 @@ Este proyecto sigue [SemVer](https://semver.org/lang/es/).
 - Versión inicial: TUI en Ink, comandos `login`/`whoami`/`balance`/`tx`/`send`,
   política local de `send` (límites, whitelist) y skill para agentes.
 
-[0.1.6]: https://github.com/Pep3M/qvapay-cli/releases/tag/v0.1.6
-[0.1.5]: https://github.com/Pep3M/qvapay-cli/releases/tag/v0.1.5
-[0.1.4]: https://github.com/Pep3M/qvapay-cli/releases/tag/v0.1.4
-[0.1.2]: https://github.com/Pep3M/qvapay-cli/releases/tag/v0.1.2
-[0.1.0]: https://github.com/Pep3M/qvapay-cli/releases/tag/v0.1.0
+[0.1.6]: https://github.com/qvapay/qvapay-cli/releases/tag/v0.1.6
+[0.1.5]: https://github.com/qvapay/qvapay-cli/releases/tag/v0.1.5
+[0.1.4]: https://github.com/qvapay/qvapay-cli/releases/tag/v0.1.4
+[0.1.2]: https://github.com/qvapay/qvapay-cli/releases/tag/v0.1.2
+[0.1.0]: https://github.com/qvapay/qvapay-cli/releases/tag/v0.1.0

@@ -6,10 +6,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Pep3M/qvapay-cli.git"
+    "url": "git+https://github.com/qvapay/qvapay-cli.git"
   },
-  "homepage": "https://github.com/Pep3M/qvapay-cli#readme",
-  "bugs": "https://github.com/Pep3M/qvapay-cli/issues",
+  "homepage": "https://github.com/qvapay/qvapay-cli#readme",
+  "bugs": "https://github.com/qvapay/qvapay-cli/issues",
   "bin": {
     "qvapay": "dist/cli.js"
   },

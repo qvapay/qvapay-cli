@@ -21,7 +21,7 @@ qvapay                   # abre la TUI
 | Canal | Comando | Requiere |
 |-------|---------|----------|
 | npm / bun / pnpm | `npm i -g @pep3m/qvapay` | Node ≥ 20 o Bun |
-| curl (binario autocontenido) | `curl -fsSL https://raw.githubusercontent.com/Pep3M/qvapay-cli/master/install.sh \| sh` | nada |
+| curl (binario autocontenido) | `curl -fsSL https://raw.githubusercontent.com/qvapay/qvapay-cli/master/install.sh \| sh` | nada |
 
 El binario de `install.sh` **verifica el SHA256** contra `SHA256SUMS` antes de
 instalar. Lee el script antes de correrlo (`curl … \| sh` a ciegas es antipatrón).
