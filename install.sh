@@ -2,11 +2,11 @@
 # Instalador de qvapay: descarga el binario del último Release, verifica su
 # SHA256 contra SHA256SUMS y lo coloca en ~/.local/bin (o /usr/local/bin).
 #
-# Uso:   curl -fsSL https://raw.githubusercontent.com/Pep3M/qvapay-cli/master/install.sh | sh
+# Uso:   curl -fsSL https://raw.githubusercontent.com/qvapay/qvapay-cli/master/install.sh | sh
 # Lee el script antes de correrlo (curl | sh a ciegas es antipatrón).
 set -eu
 
-REPO="Pep3M/qvapay-cli"
+REPO="qvapay/qvapay-cli"
 
 os="$(uname -s)"
 arch="$(uname -m)"
