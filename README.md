@@ -12,16 +12,20 @@ comandos directos estilo `gh`. Pensado también para que agentes (Claude Code,
 Cursor, Codex, opencode) lo usen vía skill incluida.
 
 ```bash
-npm i -g @pep3m/qvapay   # o: bun add -g @pep3m/qvapay
-qvapay                   # abre la TUI
+npm i -g @qvapay/cli   # o: bun add -g @qvapay/cli
+qvapay                 # abre la TUI
 ```
 
 ## Instalación
 
 | Canal | Comando | Requiere |
 |-------|---------|----------|
-| npm / bun / pnpm | `npm i -g @pep3m/qvapay` | Node ≥ 20 o Bun |
+| npm / bun / pnpm | `npm i -g @qvapay/cli` | Node ≥ 20 o Bun |
 | curl (binario autocontenido) | `curl -fsSL https://raw.githubusercontent.com/qvapay/qvapay-cli/master/install.sh \| sh` | nada |
+
+> **¿Venís de `@pep3m/qvapay`?** Desinstalá el viejo antes de instalar el nuevo,
+> porque ambos aportan el binario `qvapay` y el symlink colisiona:
+> `npm uninstall -g @pep3m/qvapay && npm i -g @qvapay/cli`
 
 El binario de `install.sh` **verifica el SHA256** contra `SHA256SUMS` antes de
 instalar. Lee el script antes de correrlo (`curl … \| sh` a ciegas es antipatrón).

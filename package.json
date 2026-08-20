@@ -1,6 +1,6 @@
 {
-  "name": "@pep3m/qvapay",
-  "version": "0.1.6",
+  "name": "@qvapay/cli",
+  "version": "0.1.7",
   "description": "CLI para la wallet personal de QvaPay: TUI interactiva y comandos directos.",
   "type": "module",
   "license": "MIT",
