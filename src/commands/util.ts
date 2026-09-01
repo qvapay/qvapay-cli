@@ -21,6 +21,15 @@ export function notAuthenticated(json?: boolean): void {
   process.exitCode = 2
 }
 
+// Error de uso: flag mal escrito o combinación imposible. Exit 4, igual que
+// una clave desconocida en `config`; no es un fallo, es que lo llamaste mal.
+export function usage(e: unknown, opts: GlobalOpts = {}): void {
+  const msg = e instanceof Error ? e.message : String(e)
+  if (opts.json) console.log(JSON.stringify({ error: msg }))
+  else console.error(`✖ ${msg}`)
+  process.exitCode = 4
+}
+
 // Imprime un error y fija el exit code (401 -> 2 no autenticado, resto -> 1).
 export function fail(e: unknown, opts: GlobalOpts = {}): void {
   if (e instanceof QvaPayError && e.status === 401) {

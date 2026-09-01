@@ -1,23 +1,30 @@
 // Editor de la política de send. Claves: send.enabled, send.maxPerTx,
-// send.dailyCap, send.whitelist.
+// send.dailyCap, send.whitelist, watch.webhookSecret.
 import * as p from "@clack/prompts"
-import { readConfig, type SendPolicy, writeConfig } from "../lib/policy"
+import {
+  type Config,
+  readConfig,
+  type SendPolicy,
+  writeConfig,
+} from "../lib/policy"
 import type { GlobalOpts } from "./util"
 
-const KEYS = [
+const SEND_KEYS = [
   "send.enabled",
   "send.maxPerTx",
   "send.dailyCap",
   "send.whitelist",
 ]
+const WATCH_KEYS = ["watch.webhookSecret"]
+const KEYS = [...SEND_KEYS, ...WATCH_KEYS]
 
 export async function configGetCommand(
   key: string,
   opts: GlobalOpts
 ): Promise<void> {
   const cfg = await readConfig()
-  const val = pick(cfg.send, key)
-  if (val === undefined) return badKey(key)
+  if (!KEYS.includes(key)) return badKey(key)
+  const val = pick(cfg, key)
   console.log(opts.json ? JSON.stringify({ [key]: val }) : format(val))
 }
 
@@ -26,9 +33,17 @@ export async function configSetCommand(
   value: string
 ): Promise<void> {
   const cfg = await readConfig()
-  const field = key.replace(/^send\./, "") as keyof SendPolicy
   if (!KEYS.includes(key)) return badKey(key)
 
+  if (key === "watch.webhookSecret") {
+    const secret = value.trim()
+    cfg.watch.webhookSecret = /^(null|none|off|)$/i.test(secret) ? null : secret
+    await writeConfig(cfg)
+    console.log(`${key} = ${format(pick(cfg, key))}`)
+    return
+  }
+
+  const field = key.replace(/^send\./, "") as keyof SendPolicy
   switch (field) {
     case "enabled":
       cfg.send.enabled = /^(true|1|on|yes|sí)$/i.test(value)
@@ -91,9 +106,11 @@ export async function configCommand(): Promise<void> {
   p.outro("Política guardada.")
 }
 
-function pick(send: SendPolicy, key: string): unknown {
-  const field = key.replace(/^send\./, "") as keyof SendPolicy
-  return KEYS.includes(key) ? send[field] : undefined
+// El secreto no se imprime nunca: solo si está puesto o no.
+function pick(cfg: Config, key: string): unknown {
+  if (key === "watch.webhookSecret")
+    return cfg.watch.webhookSecret ? "(configurado)" : "(sin configurar)"
+  return cfg.send[key.replace(/^send\./, "") as keyof SendPolicy]
 }
 
 function parseNullableNumber(v: string | undefined): number | null {

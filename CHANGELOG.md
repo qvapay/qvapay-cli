@@ -3,6 +3,39 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Este proyecto sigue [SemVer](https://semver.org/lang/es/).
 
+## [Unreleased]
+
+### Añadido
+
+- `tx watch` acepta **condiciones**: `--from`, `--to`, `--direction in|out`,
+  `--min`, `--max` y `--grep`, combinables en AND. `--from`/`--to` comparan
+  contra `PaidBy`/`User` ignorando mayúsculas y el `@` inicial; `--direction`
+  se resuelve contra el usuario de la sesión.
+- `tx watch --webhook <url>` hace POST de `{ event, sent_at, transaction }`
+  cuando una transacción cumple las condiciones. Solo `https` (`http` únicamente
+  contra localhost), timeout de 5 s y un reintento salvo en 4xx. Un webhook que
+  falla avisa por stderr pero **no** detiene la vigilancia.
+- Firma opcional `X-QvaPay-Signature: sha256=<hmac>` sobre el cuerpo exacto. El
+  secreto sale de `watch.webhookSecret` en el config o de la variable de entorno
+  `QVAPAY_WEBHOOK_SECRET` (que tiene prioridad); nunca por flag, porque la línea
+  de comandos es visible en `ps`.
+- Nueva clave de configuración `watch.webhookSecret`. `config get` nunca imprime
+  su valor, solo si está configurado o no.
+- `tx watch` puede **parar solo**: `--until-match`, `--max-events <n>` y
+  `--timeout <s>`. El plazo manda sobre el intervalo, así que `--timeout 20
+  --interval 60` se rinde a los 20 s.
+- **Exit code 5**: `--timeout` venció sin coincidencias. Es distinto de 1 para
+  que un script sepa que la vigilancia funcionó, pero no pasó nada.
+
+### Corregido
+
+- La skill de agente documentaba `config get maxPerTx`, que siempre fallaba: las
+  claves llevan el prefijo (`send.maxPerTx`). También mostraba montos negativos
+  en el ejemplo de `tx list`; la API los devuelve como string y siempre en
+  positivo, y la dirección se deduce de `PaidBy`/`User`.
+- Un flag mal escrito en `tx watch` ya no se reporta como "Error inesperado":
+  sale con 4 (argumento inválido) y un mensaje que dice qué esperaba.
+
 ## [0.1.7] - 2026-08-20
 
 ### Cambiado

@@ -19,10 +19,48 @@ qvapay tx get <uuid>          # detalle de una transacción (siempre JSON)
 qvapay tx watch --json        # espera transacciones nuevas: NDJSON, una línea por tx
 ```
 
-`tx watch` no termina solo: sondea cada 15 s (mínimo 10, `--interval <s>`) hasta
-Ctrl-C. La primera pasada no imprime nada — solo registra lo que ya existía —, así
-que toda línea que salga es una transacción nueva. Úsalo para esperar un cobro en
-vez de repetir `tx list`.
+`tx watch` sondea cada 15 s (mínimo 10, `--interval <s>`). La primera pasada no
+imprime nada — solo registra lo que ya existía —, así que toda línea que salga es
+una transacción nueva. Úsalo para esperar un cobro en vez de repetir `tx list`.
+
+### Esperar una condición concreta
+
+Filtros, todos combinables en AND (sin ninguno, pasa cualquier transacción):
+
+```
+--from <usuario>     quién paga        --min <monto>   monto mínimo
+--to <usuario>       quién recibe      --max <monto>   monto máximo
+--direction in|out   entrante/saliente --grep <texto>  texto en la descripción
+```
+
+`--direction in` significa "me entró dinero" (se resuelve contra la sesión, no
+hace falta escribir el username propio). El `@` y las mayúsculas dan igual.
+
+**Sin condición de parada, `tx watch` no termina nunca y te vas a colgar.** Usa
+siempre una, y `--timeout` como red de seguridad:
+
+```
+--until-match        sale en la primera coincidencia (exit 0)
+--max-events <n>     sale tras n coincidencias
+--timeout <s>        se rinde a los n segundos → exit 5, sin coincidencias
+```
+
+Patrón recomendado para esperar un cobro:
+
+```
+qvapay tx watch --from acme --min 100 --until-match --timeout 600 --json
+```
+
+Exit 0 = llegó (la tx sale por stdout). Exit 5 = no llegó en el plazo; eso **no
+es un error**, no lo reportes como fallo.
+
+### Notificar a un webhook
+
+`--webhook <url>` hace POST de `{ event, sent_at, transaction }` a esa URL
+(solo `https`; `http` únicamente contra localhost). Si hay secreto configurado,
+firma con `X-QvaPay-Signature: sha256=<hmac>`. **No propongas nunca pasar el
+secreto por flag** — no existe tal flag, sale de `watch.webhookSecret` o de
+`QVAPAY_WEBHOOK_SECRET`. Un webhook que falla no detiene la vigilancia.
 
 Ejemplos de salida:
 
@@ -43,9 +81,20 @@ $ qvapay whoami --json
 
 $ qvapay tx list --limit 2 --json
 [
-  { "uuid": "…", "amount": -10, "status": "paid", "description": "Pago", "created_at": "2026-08-01T12:00:00" }
+  {
+    "uuid": "…",
+    "amount": "10",            // string, y SIEMPRE positivo
+    "status": "paid",
+    "description": "Pago",
+    "created_at": "2026-08-01T12:00:00",
+    "PaidBy": { "username": "quien-paga", … },   // puede ser null
+    "User":   { "username": "quien-recibe", … }  // puede ser null
+  }
 ]
 ```
+
+El monto no lleva signo: la dirección se deduce de `PaidBy` / `User`. Si el
+usuario de la sesión está en `User`, le entró dinero; si está en `PaidBy`, salió.
 
 ## `send` — dinero real (requiere al humano)
 
@@ -64,8 +113,8 @@ $ qvapay tx list --limit 2 --json
 Consultar/ajustar la política (esto sí es lectura/config, seguro):
 
 ```
-qvapay config get maxPerTx
-qvapay config set whitelist pepe,ana
+qvapay config get send.maxPerTx
+qvapay config set send.whitelist pepe,ana
 ```
 
 ## Exit codes
@@ -76,4 +125,5 @@ qvapay config set whitelist pepe,ana
 | 1 | Error inesperado o cancelado |
 | 2 | No autenticado → el humano debe correr `qvapay login` |
 | 3 | `send` bloqueado por política (o no interactivo sin `QVAPAY_ALLOW_SEND=1`) |
-| 4 | Monto inválido |
+| 4 | Argumento inválido (monto, o un flag mal escrito) |
+| 5 | `tx watch --timeout` venció sin coincidencias (no es un fallo) |

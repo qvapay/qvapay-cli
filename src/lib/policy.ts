@@ -13,14 +13,22 @@ export interface SendPolicy {
   whitelist: string[]
 }
 
+// Secreto para firmar los webhooks de `tx watch`. Vive aquí y no en argv
+// porque la línea de comandos es visible en `ps`.
+export interface WatchConfig {
+  webhookSecret: string | null
+}
+
 export interface Config {
   send: SendPolicy
   daily: { date: string; spent: number } // contador acumulado del día
+  watch: WatchConfig
 }
 
 export const DEFAULT_CONFIG: Config = {
   send: { enabled: true, maxPerTx: null, dailyCap: null, whitelist: [] },
   daily: { date: "", spent: 0 },
+  watch: { webhookSecret: null },
 }
 
 function configFile(): string {
@@ -33,6 +41,7 @@ export async function readConfig(): Promise<Config> {
     return {
       send: { ...DEFAULT_CONFIG.send, ...raw.send },
       daily: { ...DEFAULT_CONFIG.daily, ...raw.daily },
+      watch: { ...DEFAULT_CONFIG.watch, ...raw.watch },
     }
   } catch {
     return structuredClone(DEFAULT_CONFIG)
